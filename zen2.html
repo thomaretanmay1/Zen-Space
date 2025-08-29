@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen Space</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1a237e, #4a148c);
+            --card-light: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+            --toast-bg: #323232;
+            --text-dark: #333;
+            --text-light: #fff;
+            --text-muted: #888;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --card-radius: 15px;
+            --main-bg: #f0f2f5;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --card-light: linear-gradient(135deg, #2a2a2a, #1f1f1f);
+                --text-dark: #f0f0f0;
+                --text-muted: #aaa;
+                --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                --main-bg: #121212;
+            }
+            
+            body {
+                background-color: var(--main-bg);
+                color: var(--text-dark);
+            }
+            
+            .zen-container, .zen-header {
+                background-color: #1e1e1e;
+            }
+            
+            .zen-icon-button {
+                background: #2a2a2a;
+                color: var(--text-dark);
+            }
+            
+            .zen-new-space-button {
+                background-color: #2a2a2a;
+                border-color: #444;
+                color: #aaa;
+            }
+
+            .zen-popup-container, .zen-profile-stat, .zen-profile-edit, .zen-popup-input, .zen-warning-cancel {
+                background-color: #2a2a2a;
+                color: var(--text-dark);
+            }
+
+            .zen-popup-input { border-color: #444; }
+
+            .zen-light-card .zen-start-button {
+                background: linear-gradient(135deg, #3a3a3a, #2f2f2f);
+                color: var(--text-dark);
+            }
+
+            .zen-popup-audio-option:hover { background-color: #333; }
+            .zen-popup-audio-option.selected {
+                background-color: #1a237e;
+                border-color: #3949ab;
+                color: var(--text-light);
+            }
+            .zen-achievement.unlocked {
+                background: #2e7d32;
+                border-color: #4caf50;
+                color: #e8f5e9;
+            }
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .zen-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #ffffff;
+            box-shadow: var(--shadow);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: background-color 0.3s;
+        }
+
+        /* Header */
+        .zen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s;
+        }
+
+        .zen-app-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .zen-header-icons { display: flex; gap: 10px; }
+
+        .zen-icon-button {
+            color: #4a4a4a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f5f5f5;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+            cursor: pointer;
+        }
+        .zen-icon-button:hover { transform: scale(1.05); }
+
+        /* Main Content */
+        .zen-main-content { padding: 0 20px 20px; }
+
+        .zen-section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin: 25px 0 15px;
+        }
+        .zen-deep-title { margin-top: 0; }
+
+        /* Cards */
+        .zen-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: var(--card-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .zen-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .zen-card.new-card-animation { animation: card-in 0.5s ease-out forwards; }
+
+        .zen-card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .zen-card-text h3 { margin: 0; font-size: 20px; font-weight: 700; }
+        .zen-card-text span { font-size: 14px; font-weight: 400; display: block; margin-top: 4px; }
+
+        .zen-deep-card { background: var(--primary-gradient); color: var(--text-light); }
+        .zen-deep-card .zen-card-text span { color: rgba(255, 255, 255, 0.8); }
+        .zen-deep-card .zen-start-button { background-color: #ffffff; color: #1a237e; }
+
+        .zen-light-card { background: var(--card-light); color: var(--text-dark); }
+        .zen-light-card .zen-card-text span { color: var(--text-muted); }
+        .zen-light-card .zen-start-button { background: linear-gradient(135deg, #e0e0e0, #d5d5d5); color: #4a4a4a; }
+        
+        .zen-start-button {
+            border: none;
+            border-radius: 20px;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .zen-start-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .zen-new-space-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+            border: 2px dashed #d0d0d0;
+            border-radius: var(--card-radius);
+            padding: 30px 20px;
+            color: #a0a0a0;
+            text-decoration: none;
+            margin-top: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+        .zen-new-space-button:hover { transform: scale(1.02); }
+        .zen-add-icon { font-size: 36px; margin-bottom: 5px; }
+
+        /* Popups */
+        .zen-popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 3000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .zen-popup-overlay.active {
+            opacity: 1; visibility: visible;
+            animation: fadeIn 0.3s forwards;
+        }
+        
+        .zen-popup-container {
+            background-color: #fff; width: 90%; max-width: 400px;
+            border-radius: 16px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px); transition: transform 0.3s;
+            max-height: 80vh; overflow-y: auto;
+        }
+        .zen-popup-overlay.active .zen-popup-container { transform: translateY(0); }
+        
+        .zen-popup-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+        }
+        .zen-popup-title { font-size: 20px; font-weight: 700; }
+        .zen-popup-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
+        .zen-popup-form-group { margin-bottom: 20px; }
+        .zen-popup-label { display: block; margin-bottom: 8px; font-weight: 500; }
+        
+        .zen-popup-input {
+            width: 100%; padding: 12px 15px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 16px; transition: border-color 0.3s;
+        }
+        .zen-popup-input:focus { border-color: #1a237e; outline: none; }
+        
+        .zen-popup-duration-selector { display: flex; align-items: center; gap: 10px; }
+        .zen-popup-duration-input {
+            width: 80px; padding: 12px 15px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 16px; text-align: center;
+        }
+        
+        .zen-popup-backgrounds {
+            display: flex; gap: 10px; overflow-x: auto;
+            padding: 5px 0 15px; scrollbar-width: thin;
+        }
+        
+        .zen-popup-background {
+            width: 80px; height: 80px; border-radius: 8px; overflow: hidden;
+            cursor: pointer; border: 2px solid transparent;
+            transition: border-color 0.3s, transform 0.2s; flex-shrink: 0;
+        }
+        .zen-popup-background:hover { transform: scale(1.05); }
+        .zen-popup-background.selected { border-color: #1a237e; }
+        .zen-popup-background img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .zen-popup-audio-options { display: flex; flex-direction: column; gap: 10px; }
+        
+        .zen-popup-audio-option {
+            display: flex; align-items: center; padding: 12px;
+            border: 1px solid #ddd; border-radius: 8px; cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .zen-popup-audio-option:hover { background-color: #f5f5f5; }
+        .zen-popup-audio-option.selected { background-color: #e8eaf6; border-color: #1a237e; }
+        
+        .zen-popup-submit, .zen-popup-delete {
+            color: white; border: none; border-radius: 25px;
+            padding: 15px 25px; font-size: 16px; font-weight: 500;
+            cursor: pointer; width: 100%; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .zen-popup-submit { background: var(--primary-gradient); margin-top: 20px; }
+        .zen-popup-delete { background-color: #f44336; margin-top: 10px; }
+
+        .zen-popup-submit:hover, .zen-popup-delete:hover {
+            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Toast */
+        .zen-toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background-color: var(--toast-bg); color: white; padding: 12px 24px;
+            border-radius: 4px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 4001; opacity: 0; transition: opacity 0.3s;
+        }
+        .zen-toast.active { opacity: 1; }
+
+        /* Fullscreen Mode */
+        .zen-fullscreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary-gradient); z-index: 2000;
+            display: none; flex-direction: column; justify-content: center;
+            align-items: center; color: white; transition: opacity 0.3s;
+        }
+        .zen-fullscreen.active { display: flex; }
+        .zen-fullscreen-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0.3;
+        }
+        .zen-timer-display { font-size: 72px; font-weight: 700; margin: 20px 0; z-index: 1; }
+        .zen-fullscreen-title { font-size: 24px; margin-bottom: 10px; z-index: 1; }
+        
+        .zen-fullscreen-controls { display: flex; gap: 15px; margin-top: 30px; z-index: 1; }
+        .zen-fullscreen-control {
+            background: rgba(255, 255, 255, 0.2); width: 50px; height: 50px;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .zen-fullscreen-control:hover {
+            background: rgba(255, 255, 255, 0.3); transform: scale(1.1);
+        }
+        
+        /* AOD Mode */
+        .zen-aod-mode {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000; z-index: 3000; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            color: white;
+        }
+        .zen-aod-mode.active { display: flex; }
+        .zen-aod-circle { position: relative; width: 250px; height: 250px; }
+        .zen-aod-circle svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .zen-aod-circle .zen-circle-bg { stroke-width: 10; stroke: #333; fill: transparent; }
+        .zen-aod-circle .zen-circle-progress {
+            stroke-width: 10; stroke: #4caf50; fill: transparent;
+            stroke-linecap: round; transition: stroke-dashoffset 1s linear;
+        }
+        .zen-aod-timer {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 48px; font-weight: 700;
+        }
+        .zen-aod-hint { position: absolute; bottom: 30px; font-size: 14px; opacity: 0.7; }
+        
+        /* Profile & Achievements */
+        .zen-profile-stats {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0;
+        }
+        .zen-profile-stat { background: #f5f5f5; border-radius: 10px; padding: 15px; text-align: center; }
+        .zen-profile-stat-value { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .zen-profile-stat-label { font-size: 14px; color: var(--text-muted); }
+        .zen-profile-edit {
+            display: flex; align-items: center; margin-top: 15px;
+            padding: 10px; background: #f5f5f5; border-radius: 8px;
+        }
+        .zen-profile-edit-input { flex: 1; border: none; background: transparent; font-size: 16px; padding: 5px; }
+        .zen-profile-edit-button { background: none; border: none; color: #1a237e; cursor: pointer; }
+        .zen-achievements { margin-top: 20px; }
+        .zen-achievement-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .zen-achievement {
+            padding: 10px; border-radius: 8px; text-align: center; flex: 1 1 100px;
+            min-width: 80px; background: var(--card-light); border: 1px solid #ddd;
+            transition: transform 0.2s; cursor: pointer;
+        }
+        .zen-achievement.unlocked { background: #e8f5e9; border-color: #4caf50; color: #1b5e20; }
+        .zen-achievement.unlocked .material-icons { color: #4caf50; }
+        .zen-achievement-icon { font-size: 36px; color: #ccc; }
+        .zen-achievement-title { font-size: 12px; margin-top: 5px; font-weight: 500; }
+        
+        /* Warning & Confirmation Popups */
+        .zen-warning-popup .zen-popup-container, .zen-confirmation-popup .zen-popup-container { text-align: center; }
+        .zen-warning-icon { font-size: 48px; color: #f44336; margin-bottom: 15px; }
+        .zen-confirmation-icon { font-size: 48px; color: #4caf50; margin-bottom: 15px; }
+        .zen-warning-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .zen-warning-button {
+            flex: 1; padding: 12px; border-radius: 25px; border: none; font-weight: 500; cursor: pointer;
+        }
+        .zen-warning-confirm { background: #f44336; color: white; }
+        .zen-warning-cancel { background: #f5f5f5; color: #333; }
+        .zen-confirmation-button {
+            background: var(--primary-gradient); color: white; border: none;
+            border-radius: 25px; padding: 12px 25px; font-weight: 500;
+            cursor: pointer; margin-top: 20px;
+        }
+        
+        /* Reminder Overlay */
+        .zen-reminder-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 4000;
+            animation: fadeIn 0.3s forwards; backdrop-filter: blur(5px);
+        }
+        .zen-reminder-box {
+            background: rgba(255, 255, 255, 0.9); color: #333; padding: 30px;
+            border-radius: 16px; text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); animation: slideIn 0.5s forwards;
+        }
+        @media (prefers-color-scheme: dark) {
+            .zen-reminder-box { background: rgba(42, 42, 42, 0.9); color: #f0f0f0; }
+        }
+        .zen-reminder-icon { font-size: 60px; color: #2196f3; margin-bottom: 10px; }
+        .zen-reminder-text { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .zen-reminder-message { font-size: 16px; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes card-in {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animated-gradient {
+            background-size: 200% 200%;
+            animation: gradient-animation 15s ease infinite;
+        }
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="zen-container">
+        <header class="zen-header">
+            <h1 class="zen-app-title">Zen Space</h1>
+            <div class="zen-header-icons">
+                <div class="zen-icon-button" id="zen-profile-button"><span class="material-icons">account_circle</span></div>
+            </div>
+        </header>
+
+        <main class="zen-main-content">
+            <h2 class="zen-section-title zen-deep-title">Deep Zen</h2>
+            <div class="zen-card zen-deep-card" data-id="deep-zen">
+                <div class="zen-card-content">
+                    <div class="zen-card-text">
+                        <h3>Deep Zen</h3>
+                        <span>60 min ></span>
+                    </div>
+                    <button class="zen-start-button">Start</button>
+                </div>
+            </div>
+
+            <h2 class="zen-section-title">Light Zen</h2>
+            <div id="zen-card-container">
+                <div class="zen-card zen-light-card" data-id="work">
+                    <div class="zen-card-content">
+                        <div class="zen-card-text">
+                            <h3>Work</h3>
+                            <span>25 min ></span>
+                        </div>
+                        <button class="zen-start-button">Start</button>
+                    </div>
+                </div>
+                
+                <div class="zen-card zen-light-card" data-id="study">
+                    <div class="zen-card-content">
+                        <div class="zen-card-text">
+                            <h3>Study</h3>
+                            <span>45 min ></span>
+                        </div>
+                        <button class="zen-start-button">Start</button>
+                    </div>
+                </div>
+                
+                <div class="zen-card zen-light-card" data-id="read">
+                    <div class="zen-card-content">
+                        <div class="zen-card-text">
+                            <h3>Read</h3>
+                            <span>30 min ></span>
+                        </div>
+                        <button class="zen-start-button">Start</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zen-new-space-button" id="zen-new-space-button">
+                <span class="material-icons zen-add-icon">add</span>
+                <span>New space</span>
+            </div>
+        </main>
+    </div>
+
+    <div class="zen-toast" id="zen-toast"></div>
+
+    <div class="zen-fullscreen" id="zen-fullscreen">
+        <img class="zen-fullscreen-bg" id="zen-fullscreen-bg" src="" alt="Background">
+        <div class="zen-fullscreen-title" id="zen-fullscreen-title">Deep Zen</div>
+        <div class="zen-timer-display" id="zen-timer-display">60:00</div>
+        <div class="zen-fullscreen-controls">
+            <div class="zen-fullscreen-control" id="zen-audio-toggle"><span class="material-icons">volume_off</span></div>
+            <div class="zen-fullscreen-control" id="zen-aod-toggle"><span class="material-icons">brightness_2</span></div>
+            <div class="zen-fullscreen-control" id="zen-fullscreen-exit"><span class="material-icons">close</span></div>
+        </div>
+    </div>
+
+    <div class="zen-aod-mode" id="zen-aod-mode">
+        <div class="zen-aod-circle">
+            <svg viewBox="0 0 100 100">
+                <circle class="zen-circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="zen-circle-progress" id="zen-circle-progress" cx="50" cy="50" r="45"></circle>
+            </svg>
+            <div class="zen-aod-timer" id="zen-aod-timer">60:00</div>
+        </div>
+        <div class="zen-aod-hint">Double tap to exit</div>
+    </div>
+
+    <div class="zen-popup-overlay" id="zen-new-space-popup">
+        <div class="zen-popup-container">
+            <div class="zen-popup-header">
+                <h2 class="zen-popup-title">Create New Space</h2>
+                <button class="zen-popup-close"><span class="material-icons">close</span></button>
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label" for="zen-space-name">Space Name</label>
+                <input type="text" class="zen-popup-input" id="zen-space-name" placeholder="Enter space name">
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label">Duration</label>
+                <div class="zen-popup-duration-selector">
+                    <input type="number" class="zen-popup-duration-input" id="zen-space-duration" min="1" max="240" value="25">
+                    <span class="zen-popup-duration-unit">minutes</span>
+                </div>
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label">Background</label>
+                <div class="zen-popup-backgrounds" id="zen-background-selector"></div>
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label">Ambient Sound</label>
+                <div class="zen-popup-audio-options" id="zen-audio-selector"></div>
+            </div>
+            <button class="zen-popup-submit" id="zen-new-space-submit">Create Space</button>
+        </div>
+    </div>
+
+    <div class="zen-popup-overlay" id="zen-edit-space-popup">
+        <div class="zen-popup-container">
+            <div class="zen-popup-header">
+                <h2 class="zen-popup-title">Edit Space</h2>
+                <button class="zen-popup-close"><span class="material-icons">close</span></button>
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label" for="zen-edit-space-name">Space Name</label>
+                <input type="text" class="zen-popup-input" id="zen-edit-space-name">
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label">Duration</label>
+                <div class="zen-popup-duration-selector">
+                    <input type="number" class="zen-popup-duration-input" id="zen-edit-space-duration" min="1" max="240">
+                    <span class="zen-popup-duration-unit">minutes</span>
+                </div>
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label">Background</label>
+                <div class="zen-popup-backgrounds" id="zen-edit-background-selector"></div>
+            </div>
+            <div class="zen-popup-form-group">
+                <label class="zen-popup-label">Ambient Sound</label>
+                <div class="zen-popup-audio-options" id="zen-edit-audio-selector"></div>
+            </div>
+            <button class="zen-popup-submit" id="zen-edit-space-save">Save Changes</button>
+            <button class="zen-popup-delete" id="zen-edit-space-delete">Delete Space</button>
+        </div>
+    </div>
+
+    <div class="zen-popup-overlay" id="zen-profile-popup">
+        <div class="zen-popup-container">
+            <div class="zen-popup-header">
+                <h2 class="zen-popup-title">Your Profile</h2>
+                <button class="zen-popup-close"><span class="material-icons">close</span></button>
+            </div>
+            <div class="zen-profile-edit">
+                <input type="text" class="zen-profile-edit-input" id="zen-profile-name" value="Zen User" disabled>
+                <button class="zen-profile-edit-button" id="zen-profile-edit"><span class="material-icons">edit</span></button>
+            </div>
+            <div class="zen-profile-stats">
+                <div class="zen-profile-stat"><div class="zen-profile-stat-value" id="zen-sessions-count">0</div><div class="zen-profile-stat-label">Sessions</div></div>
+                <div class="zen-profile-stat"><div class="zen-profile-stat-value" id="zen-focused-time">0h 0m</div><div class="zen-profile-stat-label">Focused Time</div></div>
+                <div class="zen-profile-stat"><div class="zen-profile-stat-value" id="zen-spaces-count">3</div><div class="zen-profile-stat-label">Spaces</div></div>
+                <div class="zen-profile-stat"><div class="zen-profile-stat-value" id="zen-avg-session">0m</div><div class="zen-profile-stat-label">Avg. Session</div></div>
+            </div>
+            <div class="zen-achievements">
+                <h3 class="zen-section-title">Achievements</h3>
+                <div class="zen-achievement-list" id="zen-achievement-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="zen-popup-overlay zen-warning-popup" id="zen-deep-warning-popup">
+        <div class="zen-popup-container">
+            <div class="zen-warning-icon"><span class="material-icons">warning</span></div>
+            <h2 class="zen-popup-title">Deep Zen Mode</h2>
+            <p>Once you start a Deep Zen session, you can't exit until the timer completes. Are you sure?</p>
+            <div class="zen-warning-buttons">
+                <button class="zen-warning-button zen-warning-cancel">Cancel</button>
+                <button class="zen-warning-button zen-warning-confirm">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="zen-popup-overlay zen-confirmation-popup" id="zen-session-complete-popup">
+        <div class="zen-popup-container">
+            <div class="zen-confirmation-icon"><span class="material-icons">check_circle</span></div>
+            <h2 class="zen-popup-title">Session Complete!</h2>
+            <p>You've successfully completed your Zen session.</p>
+            <button class="zen-confirmation-button">OK</button>
+        </div>
+    </div>
+
+    <div class="zen-reminder-overlay" id="zen-reminder-overlay">
+        <div class="zen-reminder-box">
+            <div class="zen-reminder-icon"><span class="material-icons">notifications_active</span></div>
+            <div class="zen-reminder-text" id="zen-reminder-text">Take a Break!</div>
+            <div class="zen-reminder-message" id="zen-reminder-message">Stand up and stretch or grab a glass of water.</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const cardContainer = document.getElementById('zen-card-container');
+            const newSpaceButton = document.getElementById('zen-new-space-button');
+            const toast = document.getElementById('zen-toast');
+            const fullscreen = document.getElementById('zen-fullscreen');
+            const fullscreenBg = document.getElementById('zen-fullscreen-bg');
+            const fullscreenTitle = document.getElementById('zen-fullscreen-title');
+            const timerDisplay = document.getElementById('zen-timer-display');
+            const audioToggle = document.getElementById('zen-audio-toggle');
+            const aodToggle = document.getElementById('zen-aod-toggle');
+            const exitButton = document.getElementById('zen-fullscreen-exit');
+            const aodMode = document.getElementById('zen-aod-mode');
+            const aodTimer = document.getElementById('zen-aod-timer');
+            const aodCircleProgress = document.getElementById('zen-circle-progress');
+            const reminderOverlay = document.getElementById('zen-reminder-overlay');
+            
+            // Popups
+            const popups = {
+                newSpace: document.getElementById('zen-new-space-popup'),
+                editSpace: document.getElementById('zen-edit-space-popup'),
+                profile: document.getElementById('zen-profile-popup'),
+                deepWarning: document.getElementById('zen-deep-warning-popup'),
+                sessionComplete: document.getElementById('zen-session-complete-popup')
+            };
+
+            // New Space Popup Elements
+            const spaceNameInput = document.getElementById('zen-space-name');
+            const spaceDurationInput = document.getElementById('zen-space-duration');
+            const backgroundSelector = document.getElementById('zen-background-selector');
+            const audioSelector = document.getElementById('zen-audio-selector');
+            
+            // Edit Space Popup Elements
+            const editSpaceNameInput = document.getElementById('zen-edit-space-name');
+            const editSpaceDurationInput = document.getElementById('zen-edit-space-duration');
+            const editBackgroundSelector = document.getElementById('zen-edit-background-selector');
+            const editAudioSelector = document.getElementById('zen-edit-audio-selector');
+            
+            // Profile Popup Elements
+            const profileNameInput = document.getElementById('zen-profile-name');
+            const profileEditButton = document.getElementById('zen-profile-edit');
+            const sessionsCountEl = document.getElementById('zen-sessions-count');
+            const focusedTimeEl = document.getElementById('zen-focused-time');
+            const spacesCountEl = document.getElementById('zen-spaces-count');
+            const avgSessionEl = document.getElementById('zen-avg-session');
+            const achievementListEl = document.getElementById('zen-achievement-list');
+            
+            // State variables
+            let activeTimer = null, reminderTimer = null, currentAudio = null, currentSession = null, editingSpaceId = null;
+            let isAudioPlaying = false, isDeepZenMode = false;
+            let tapCount = 0, tapTimer = null;
+            const circumference = 2 * Math.PI * 45;
+
+            // Data
+            const backgroundOptions = [
+                { id: 'gradient1', name: 'Calm Dawn', type: 'gradient', value: 'linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)' },
+                { id: 'gradient2', name: 'Dusk', type: 'gradient', value: 'linear-gradient(to top, #30cfd0 0%, #330867 100%)' },
+                { id: 'bg1', name: 'Mountain', type: 'image', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+                { id: 'bg2', name: 'Forest', type: 'image', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+                { id: 'bg3', name: 'Ocean', type: 'image', url: 'https://images.unsplash.com/photo-1505142468610-359e7d316be0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+            ];
+            
+            const audioOptions = [
+                { id: 'audio1', name: 'Rain', url: 'https://assets.mixkit.co/sfx/preview/mixkit-rain-ambience-1193.mp3' },
+                { id: 'audio2', name: 'Waves', url: 'https://assets.mixkit.co/sfx/preview/mixkit-waves-ambience-1183.mp3' },
+                { id: 'audio3', name: 'Forest', url: 'https://assets.mixkit.co/sfx/preview/mixkit-forest-ambience-1101.mp3' },
+                { id: 'audio4', name: 'White Noise', url: 'https://assets.mixkit.co/sfx/preview/mixkit-wind-air-ambience-1107.mp3' },
+                { id: 'none', name: 'None', url: null }
+            ];
+
+            const achievements = [
+                { id: 'first-session', name: 'First Zen', icon: 'check_circle', description: 'Complete your first session.', condition: (s) => s.sessions >= 1 },
+                { id: 'five-sessions', name: 'Zen Master', icon: 'done_all', description: 'Complete 5 sessions.', condition: (s) => s.sessions >= 5 },
+                { id: 'focused-hour', name: 'Focused Hour', icon: 'timer', description: 'Accumulate 60 minutes of focused time.', condition: (s) => s.focusedTime >= 60 },
+                { id: 'long-haul', name: 'Long Haul', icon: 'directions_run', description: 'Complete a session of 45+ minutes.', condition: (s) => s.longSessionCompleted },
+                { id: 'custom-creator', name: 'Creator', icon: 'brush', description: 'Create a custom space.', condition: (s) => s.customSpaceCreated }
+            ];
+
+            const sounds = {
+                complete: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3'),
+                achievement: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-video-game-win-2016.mp3')
+            };
+            
+            // --- Core Functions ---
+            const getProfile = () => JSON.parse(localStorage.getItem('zenProfile')) || { name: 'Zen User', sessions: 0, focusedTime: 0, spaces: 3, unlockedAchievements: [], longSessionCompleted: false, customSpaceCreated: false };
+            const saveProfile = (data) => localStorage.setItem('zenProfile', JSON.stringify(data));
+            const getSpaces = () => JSON.parse(localStorage.getItem('zenCustomSpaces')) || [];
+            const saveSpaces = (data) => localStorage.setItem('zenCustomSpaces', JSON.stringify(data));
+
+            const showToast = (message) => {
+                toast.textContent = message;
+                toast.classList.add('active');
+                setTimeout(() => toast.classList.remove('active'), 3000);
+            };
+
+            const showPopup = (popup) => popup.classList.add('active');
+            const hidePopup = (popup) => popup.classList.remove('active');
+
+            // --- Initialization ---
+            function init() {
+                updateProfileUI(getProfile());
+                renderCustomSpaces(getSpaces());
+                renderBackgroundOptions(backgroundSelector);
+                renderAudioOptions(audioSelector);
+                renderAchievements();
+                setupEventListeners();
+                checkActiveSession();
+                showToast('Welcome to Zen Space!');
+            }
+
+            function setupEventListeners() {
+                // Main screen buttons
+                document.getElementById('zen-profile-button').addEventListener('click', () => {
+                    renderAchievements();
+                    showPopup(popups.profile);
+                });
+                newSpaceButton.addEventListener('click', () => showPopup(popups.newSpace));
+
+                // Card interactions (start and edit)
+                document.querySelectorAll('.zen-card').forEach(card => {
+                    const cardId = card.dataset.id;
+                    card.querySelector('.zen-start-button')?.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        cardId === 'deep-zen' ? showPopup(popups.deepWarning) : startSession(cardId);
+                    });
+                    if (cardId !== 'deep-zen') {
+                        card.addEventListener('click', () => openEditSpacePopup(cardId));
+                    }
+                });
+
+                // Popup close buttons
+                Object.values(popups).forEach(popup => {
+                    popup.querySelector('.zen-popup-close')?.addEventListener('click', () => hidePopup(popup));
+                    popup.querySelector('.zen-warning-cancel')?.addEventListener('click', () => hidePopup(popup));
+                    popup.querySelector('.zen-confirmation-button')?.addEventListener('click', () => hidePopup(popup));
+                });
+                
+                // Specific popup actions
+                document.getElementById('zen-new-space-submit').addEventListener('click', createNewSpace);
+                document.getElementById('zen-edit-space-save').addEventListener('click', saveEditedSpace);
+                document.getElementById('zen-edit-space-delete').addEventListener('click', deleteSpace);
+                popups.deepWarning.querySelector('.zen-warning-confirm').addEventListener('click', () => {
+                    hidePopup(popups.deepWarning);
+                    startDeepZenSession();
+                });
+                
+                // Profile edit toggle
+                profileEditButton.addEventListener('click', () => {
+                    const isEditing = profileNameInput.disabled;
+                    profileNameInput.disabled = !isEditing;
+                    profileEditButton.innerHTML = `<span class="material-icons">${isEditing ? 'check' : 'edit'}</span>`;
+                    if (isEditing) profileNameInput.focus();
+                    else {
+                        const profile = getProfile();
+                        profile.name = profileNameInput.value;
+                        saveProfile(profile);
+                    }
+                });
+
+                // Fullscreen controls
+                audioToggle.addEventListener('click', toggleAudio);
+                aodToggle.addEventListener('click', enterAodMode);
+                exitButton.addEventListener('click', exitFullscreen);
+                aodMode.addEventListener('click', handleAodTap);
+            }
+
+            // --- UI Rendering ---
+            function updateProfileUI(profile) {
+                profileNameInput.value = profile.name;
+                sessionsCountEl.textContent = profile.sessions;
+                focusedTimeEl.textContent = `${Math.floor(profile.focusedTime / 60)}h ${profile.focusedTime % 60}m`;
+                spacesCountEl.textContent = 3 + getSpaces().length;
+                avgSessionEl.textContent = profile.sessions > 0 ? `${Math.round(profile.focusedTime / profile.sessions)}m` : '0m';
+            }
+
+            function renderCustomSpaces(spaces) {
+                cardContainer.querySelectorAll('[data-custom="true"]').forEach(el => el.remove());
+                spaces.forEach(space => {
+                    const card = document.createElement('div');
+                    card.className = 'zen-card zen-light-card new-card-animation';
+                    card.dataset.id = space.id;
+                    card.dataset.custom = 'true';
+                    card.innerHTML = `
+                        <div class="zen-card-content">
+                            <div class="zen-card-text"><h3>${space.name}</h3><span>${space.duration} min ></span></div>
+                            <button class="zen-start-button">Start</button>
+                        </div>`;
+                    card.querySelector('.zen-start-button').addEventListener('click', (e) => { e.stopPropagation(); startSession(space.id); });
+                    card.addEventListener('click', () => openEditSpacePopup(space.id));
+                    cardContainer.appendChild(card);
+                    setTimeout(() => card.classList.remove('new-card-animation'), 500);
+                });
+                updateProfileUI(getProfile());
+            }
+
+            function renderOptionSelectors(container, options, type) {
+                container.innerHTML = '';
+                options.forEach(option => {
+                    const el = document.createElement('div');
+                    if (type === 'background') {
+                        el.className = 'zen-popup-background';
+                        if (option.type === 'gradient') {
+                            el.style.background = option.value;
+                        } else {
+                            el.innerHTML = `<img src="${option.url}" alt="${option.name}">`;
+                        }
+                    } else { // audio
+                        el.className = 'zen-popup-audio-option';
+                        el.innerHTML = `<span class="material-icons">music_note</span><span>${option.name}</span>`;
+                    }
+                    el.dataset.id = option.id;
+                    el.addEventListener('click', () => {
+                        container.querySelectorAll('.selected').forEach(s => s.classList.remove('selected'));
+                        el.classList.add('selected');
+                    });
+                    container.appendChild(el);
+                });
+            }
+
+            function renderBackgroundOptions(container) { renderOptionSelectors(container, backgroundOptions, 'background'); }
+            function renderAudioOptions(container) { renderOptionSelectors(container, audioOptions, 'audio'); }
+
+            function renderAchievements() {
+                achievementListEl.innerHTML = '';
+                const profile = getProfile();
+                achievements.forEach(ach => {
+                    const isUnlocked = ach.condition(profile);
+                    const el = document.createElement('div');
+                    el.className = `zen-achievement ${isUnlocked ? 'unlocked' : ''}`;
+                    el.innerHTML = `<span class="material-icons zen-achievement-icon">${ach.icon}</span><div class="zen-achievement-title">${ach.name}</div>`;
+                    el.addEventListener('click', () => showToast(`${ach.name}: ${ach.description}`));
+                    achievementListEl.appendChild(el);
+                });
+            }
+
+            // --- Space Management (Create, Edit, Delete) ---
+            function createNewSpace() {
+                const name = spaceNameInput.value.trim();
+                const duration = parseInt(spaceDurationInput.value);
+                if (!name || isNaN(duration) || duration < 1 || duration > 240) {
+                    showToast('Please enter a valid name and duration (1-240 mins).');
+                    return;
+                }
+                const bgId = backgroundSelector.querySelector('.selected')?.dataset.id || backgroundOptions[0].id;
+                const audioId = audioSelector.querySelector('.selected')?.dataset.id || audioOptions[0].id;
+                const spaces = getSpaces();
+                spaces.push({ id: `custom-${Date.now()}`, name, duration, bgId, audioId });
+                saveSpaces(spaces);
+                
+                const profile = getProfile();
+                if (!profile.customSpaceCreated) {
+                    profile.customSpaceCreated = true;
+                    saveProfile(profile);
+                    checkAndUnlockAchievements(profile);
+                }
+                
+                renderCustomSpaces(spaces);
+                hidePopup(popups.newSpace);
+                showToast(`"${name}" created!`);
+            }
+
+            function openEditSpacePopup(id) {
+                const space = getSpaces().find(s => s.id === id);
+                if (!space) return;
+                editingSpaceId = id;
+                editSpaceNameInput.value = space.name;
+                editSpaceDurationInput.value = space.duration;
+                renderBackgroundOptions(editBackgroundSelector);
+                renderAudioOptions(editAudioSelector);
+                editBackgroundSelector.querySelector(`[data-id="${space.bgId}"]`)?.classList.add('selected');
+                editAudioSelector.querySelector(`[data-id="${space.audioId}"]`)?.classList.add('selected');
+                showPopup(popups.editSpace);
+            }
+
+            function saveEditedSpace() {
+                const spaces = getSpaces();
+                const index = spaces.findIndex(s => s.id === editingSpaceId);
+                if (index === -1) return;
+                const newName = editSpaceNameInput.value.trim();
+                const newDuration = parseInt(editSpaceDurationInput.value);
+                if (!newName || isNaN(newDuration) || newDuration < 1 || newDuration > 240) {
+                    showToast('Invalid name or duration.');
+                    return;
+                }
+                spaces[index] = {
+                    ...spaces[index],
+                    name: newName,
+                    duration: newDuration,
+                    bgId: editBackgroundSelector.querySelector('.selected').dataset.id,
+                    audioId: editAudioSelector.querySelector('.selected').dataset.id,
+                };
+                saveSpaces(spaces);
+                renderCustomSpaces(spaces);
+                hidePopup(popups.editSpace);
+                showToast('Space updated!');
+            }
+
+            function deleteSpace() {
+                const spaces = getSpaces().filter(s => s.id !== editingSpaceId);
+                saveSpaces(spaces);
+                renderCustomSpaces(spaces);
+                hidePopup(popups.editSpace);
+                showToast('Space deleted.');
+            }
+            
+            // --- Session Management ---
+            function startSession(id) {
+                const defaultSpaces = [
+                    { id: 'work', name: 'Work', duration: 25, bgId: 'bg2', audioId: 'audio3' },
+                    { id: 'study', name: 'Study', duration: 45, bgId: 'bg1', audioId: 'audio1' },
+                    { id: 'read', name: 'Read', duration: 30, bgId: 'gradient1', audioId: 'audio2' }
+                ];
+                const space = [...defaultSpaces, ...getSpaces()].find(s => s.id === id);
+                if (!space) return;
+
+                isDeepZenMode = false;
+                currentSession = space;
+                startTimer(space.duration);
+                showToast(`Starting ${space.name} session`);
+            }
+            
+            function startDeepZenSession() {
+                isDeepZenMode = true;
+                currentSession = { id: 'deep-zen', name: 'Deep Zen', duration: 60, bgId: 'gradient2', audioId: 'audio4' };
+                startTimer(60);
+                showToast('Starting Deep Zen session');
+            }
+
+            function startTimer(minutes) {
+                clearInterval(activeTimer);
+                clearInterval(reminderTimer);
+                const totalSeconds = minutes * 60;
+                localStorage.setItem('zenActiveSession', JSON.stringify({
+                    ...currentSession,
+                    startTime: Date.now(),
+                    totalSeconds: totalSeconds,
+                    isDeepZen: isDeepZenMode
+                }));
+
+                const bg = backgroundOptions.find(b => b.id === currentSession.bgId);
+                fullscreen.classList.remove('animated-gradient');
+                fullscreen.style.background = '';
+                fullscreenBg.src = '';
+                if (bg) {
+                    if (bg.type === 'gradient') {
+                        fullscreen.style.background = bg.value;
+                        fullscreen.classList.add('animated-gradient');
+                    } else {
+                        fullscreenBg.src = bg.url;
+                    }
+                }
+
+                fullscreenTitle.textContent = currentSession.name;
+                updateTimerDisplay(totalSeconds, totalSeconds);
+                showPopup(fullscreen);
+                
+                const audio = audioOptions.find(a => a.id === currentSession.audioId);
+                if (audio?.url) {
+                    currentAudio = new Audio(audio.url);
+                    currentAudio.loop = true;
+                    currentAudio.play().then(() => { isAudioPlaying = true; audioToggle.innerHTML = '<span class="material-icons">volume_up</span>'; });
+                }
+
+                if (minutes >= 30) {
+                    reminderTimer = setInterval(showReminder, 30 * 60 * 1000);
+                }
+
+                activeTimer = setInterval(() => {
+                    const sessionData = JSON.parse(localStorage.getItem('zenActiveSession'));
+                    if (!sessionData) { completeSession(); return; }
+                    const elapsed = (Date.now() - sessionData.startTime) / 1000;
+                    const remaining = Math.max(0, sessionData.totalSeconds - elapsed);
+                    updateTimerDisplay(remaining, sessionData.totalSeconds);
+                    if (remaining <= 0) completeSession();
+                }, 1000);
+            }
+
+            function updateTimerDisplay(seconds, totalSeconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                const display = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                timerDisplay.textContent = display;
+                aodTimer.textContent = display;
+
+                const progress = totalSeconds > 0 ? (seconds / totalSeconds) : 0;
+                const offset = circumference - progress * circumference;
+                aodCircleProgress.style.strokeDasharray = circumference;
+                aodCircleProgress.style.strokeDashoffset = offset;
+            }
+
+            function completeSession() {
+                clearInterval(activeTimer);
+                clearInterval(reminderTimer);
+                if (currentAudio) currentAudio.pause();
+                
+                sounds.complete.play();
+                const profile = getProfile();
+                const oldUnlocked = new Set(profile.unlockedAchievements);
+                
+                profile.sessions++;
+                profile.focusedTime += currentSession.duration;
+                if (currentSession.duration >= 45) {
+                    profile.longSessionCompleted = true;
+                }
+                
+                checkAndUnlockAchievements(profile, oldUnlocked);
+                saveProfile(profile);
+                updateProfileUI(profile);
+                
+                localStorage.removeItem('zenActiveSession');
+                hidePopup(fullscreen);
+                hidePopup(aodMode);
+                showPopup(popups.sessionComplete);
+            }
+
+            function checkAndUnlockAchievements(profile, oldUnlocked) {
+                achievements.forEach(ach => {
+                    if (ach.condition(profile) && !oldUnlocked.has(ach.id)) {
+                        if(!profile.unlockedAchievements) profile.unlockedAchievements = [];
+                        profile.unlockedAchievements.push(ach.id);
+                        showToast(`Achievement Unlocked: ${ach.name}!`);
+                        sounds.achievement.play();
+                    }
+                });
+            }
+
+            function checkActiveSession() {
+                const session = JSON.parse(localStorage.getItem('zenActiveSession'));
+                if (!session) return;
+                const elapsed = (Date.now() - session.startTime) / 1000;
+                const remaining = session.totalSeconds - elapsed;
+                if (remaining > 0) {
+                    isDeepZenMode = session.isDeepZen;
+                    currentSession = session;
+                    startTimer(remaining / 60);
+                    showToast(`Resuming ${session.name} session`);
+                } else {
+                    localStorage.removeItem('zenActiveSession');
+                }
+            }
+
+            // --- Fullscreen/AOD Controls ---
+            function toggleAudio() {
+                if (!currentAudio) return;
+                isAudioPlaying ? currentAudio.pause() : currentAudio.play();
+                isAudioPlaying = !isAudioPlaying;
+                audioToggle.innerHTML = `<span class="material-icons">${isAudioPlaying ? 'volume_up' : 'volume_off'}</span>`;
+            }
+
+            function enterAodMode() {
+                showPopup(fullscreen);
+                showPopup(aodMode);
+                const session = JSON.parse(localStorage.getItem('zenActiveSession'));
+                if(session) updateTimerDisplay(session.totalSeconds - (Date.now() - session.startTime) / 1000, session.totalSeconds);
+            }
+
+            function handleAodTap() {
+                tapCount++;
+                if (tapCount === 1) {
+                    tapTimer = setTimeout(() => { tapCount = 0; }, 300);
+                } else if (tapCount === 2) {
+                    clearTimeout(tapTimer);
+                    tapCount = 0;
+                    if (!isDeepZenMode) hidePopup(aodMode);
+                    else showToast('Cannot exit Deep Zen mode');
+                }
+            }
+            
+            function exitFullscreen() {
+                if (isDeepZenMode) {
+                    showToast('Cannot exit Deep Zen mode');
+                    return;
+                }
+                clearInterval(activeTimer);
+                clearInterval(reminderTimer);
+                if (currentAudio) currentAudio.pause();
+                localStorage.removeItem('zenActiveSession');
+                hidePopup(fullscreen);
+                hidePopup(aodMode);
+                showToast('Session cancelled.');
+            }
+
+            function showReminder() {
+                reminderOverlay.style.display = 'flex';
+                setTimeout(() => { reminderOverlay.style.display = 'none'; }, 5000);
+            }
+
+            // --- Start App ---
+            init();
+        });
+    </script>
+</body>
+</html>
